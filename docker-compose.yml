@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Development server with hot-reload
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    container_name: shelf-dev
+    ports:
+      - "${PORT:-3000}:3000"
+    networks:
+      - shelf
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SUPABASE_ANON_PUBLIC=${SUPABASE_ANON_PUBLIC}
+      - SUPABASE_SERVICE_ROLE=${SUPABASE_SERVICE_ROLE}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SERVER_URL=${SERVER_URL:-http://localhost:3000}
+      - APP_NAME=${APP_NAME:-Shelf}
+      - FINGERPRINT=${FINGERPRINT:-}
+      - ENABLE_PREMIUM_FEATURES=${ENABLE_PREMIUM_FEATURES:-true}
+      - DISABLE_SIGNUP=${DISABLE_SIGNUP:-false}
+      - DISABLE_SSO=${DISABLE_SSO:-false}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY:-}
+      - STRIPE_WEBHOOK_ENDPOINT_SECRET=${STRIPE_WEBHOOK_ENDPOINT_SECRET:-}
+      - FREE_TRIAL_DAYS=${FREE_TRIAL_DAYS:-14}
+      - SMTP_PWD=${SMTP_PWD:-}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      - SEND_ONBOARDING_EMAIL=${SEND_ONBOARDING_EMAIL:-true}
+      - MAPTILER_TOKEN=${MAPTILER_TOKEN:-}
+      - GEOCODING_USER_AGENT=${GEOCODING_USER_AGENT:-shelf.nu}
+      - MICROSOFT_CLARITY_ID=${MICROSOFT_CLARITY_ID:-}
+      - INVITE_TOKEN_SECRET=${INVITE_TOKEN_SECRET}
+      - SENTRY_ORG=${SENTRY_ORG:-}
+      - SENTRY_PROJECT=${SENTRY_PROJECT:-}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
+    volumes:
+      # Mount source code for hot-reload
+      - ./app:/src/app
+      - ./public:/src/public
+      - ./server:/src/server
+      - ./package.json:/src/package.json
+      - ./vite.config.ts:/src/vite.config.ts
+      - ./tsconfig.json:/src/tsconfig.json
+      - ./tailwind.config.ts:/src/tailwind.config.ts
+      - ./postcss.config.mjs:/src/postcss.config.mjs
+      - ./prisma.config.ts:/src/prisma.config.ts
+      # Persist node_modules in a named volume for better performance
+      - node_modules:/src/node_modules
+      # Persist Prisma generated files
+      - prisma_generated:/src/node_modules/.prisma
+    command: npm run dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health-check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+volumes:
+  node_modules:
+  prisma_generated:
+networks:
+  shelf:
+    driver: bridge

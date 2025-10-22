@@ -1,7 +1,7 @@
 # Base Node image
-FROM node:22-bookworm-slim AS base
+FROM node:22-bookworm-slim AS dev
 
-# Set for base and all layer that inherit from it
+# Set for dev and all layer that inherit from it
 #ENV PORT="8080"
 ENV NODE_ENV="production"
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -14,26 +14,24 @@ RUN apt-get install -y openssl curl && \
 
 
 # Install all node_modules, including dev dependencies
-FROM base AS deps
+FROM dev AS deps
 
 ADD package.json .
-RUN npm install -g pnpm
-RUN pnpm install --include=dev
+RUN npm install --include=dev
 
 # Build the app and setup production node_modules
-FROM base AS build
+FROM dev AS build
 
 COPY --from=deps /src/node_modules /src/node_modules
 
 ADD . .
 
-# RUN npm install -g pnpm
 RUN npx prisma generate
 RUN npm run build
 RUN npm prune --omit=dev
 
 # Finally, build the production image with minimal footprint
-FROM base AS release
+FROM dev AS release
 
 COPY --from=build /src/node_modules /src/node_modules
 COPY --from=build /src/app/database /src/app/database

@@ -77,6 +77,8 @@ export default defineConfig({
 
       buildEnd: async ({ remixConfig }) => {
         const sentryInstrument = `instrument.server`;
+        
+        // Build the Sentry instrumentation file
         await esbuild
           .build({
             alias: {
@@ -100,6 +102,26 @@ export default defineConfig({
                 Buffer.from(fs.readFileSync(serverBuildPath)),
               ])
             );
+          })
+          .catch((error: unknown) => {
+            console.error(error);
+            process.exit(1);
+          });
+
+        // Build the server entry point
+        await esbuild
+          .build({
+            alias: {
+              "~": `./app`,
+            },
+            outdir: `${remixConfig.buildDirectory}/server`,
+            entryPoints: [`./server/index.ts`],
+            platform: "node",
+            format: "esm",
+            // Don't include node_modules in the bundle
+            packages: "external",
+            bundle: true,
+            logLevel: "info",
           })
           .catch((error: unknown) => {
             console.error(error);

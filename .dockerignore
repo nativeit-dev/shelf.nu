@@ -2,6 +2,8 @@ node_modules
 *.log
 .DS_Store
 .env
+.env.*
+!.env.example
 .cache
 public/build
 build
@@ -15,4 +17,17 @@ README.md
 .vscode
 .editorconfig
 .idea
+.husky
+.eslintcache
 /test/lab_equipment_2000.csv
+/test
+/docs
+*.md
+.prettierignore
+.prettierrc.json
+.eslintrc
+.eslintignore
+playwright.config.ts
+vitest.config.ts
+coverage
+.nyc_output

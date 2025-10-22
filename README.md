@@ -118,15 +118,35 @@ Your app will be available at `http://localhost:3000` 🎊
 - 🗄️ **[Supabase Setup Guide](./docs/supabase-setup.md)** - Complete Supabase configuration
 - 🚀 **[Deployment Guide](./docs/deployment.md)** - Deploy to production (Fly.io, GitHub Actions)
 - 🐳 **[Docker Guide](./docs/docker.md)** - Run with Docker
+- 🐙 **[Docker Compose Guide](./docs/docker-compose.md)** - Run with Docker Compose
 - 🔧 **[All Documentation](./docs/)** - Browse all guides and references
 
 ---
 
 ## Alternative Setup Options 🛠️
 
+### Docker Compose 🐙 (Recommended for Docker users)
+
+Get started quickly with Docker Compose for both development and production:
+
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Edit .env with your Supabase credentials
+
+# Start development server
+docker-compose up
+
+# Or start production server
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+See the [Docker Compose Quick Start](./DOCKER-COMPOSE-README.md) or full [Docker Compose Guide](./docs/docker-compose.md) for details.
+
 ### Docker 🐳
 
-Prefer containers? Check out our [Docker setup guide](./docs/docker.md).
+Prefer standard Docker commands? Check out our [Docker setup guide](./docs/docker.md).
 
 ### One-Click Deploy 🚀
 
